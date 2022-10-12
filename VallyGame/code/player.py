@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+from support import *
 
 
 class Player(pygame.sprite.Sprite):
@@ -11,10 +12,14 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, pos, group):
         super().__init__(group)
+        # 加载所有动画
+        self.import_assets()
+        # 格式：方向+状态（状态可以为空） exp：down（没状态的） down_axe(方向向下，状态为axe锄头
+        self.status = 'down'
+        self.frame_index = 0
         # 一般的设置
         # 玩家的图片，需要一个可绘制的surface
-        self.image = pygame.Surface((32, 64))
-        self.image.fill('green')
+        self.image = self.animations[self.status][self.frame_index]
         self.rect = self.image.get_rect(center=pos)
         # 玩家移动相关的设置
         # vector2(x,y) x = 0, 左， x =1 右 y = 0 左，
@@ -24,8 +29,16 @@ class Player(pygame.sprite.Sprite):
         self.speed = 200
 
     def import_assets(self):
-        #包含动画信息
-        self.animations = {'up':[]}
+        # 包含动画信息
+        self.animations = {'up': [], 'down': [], 'left': [], 'right': [],
+                           'up_idle': [], 'down_idle': [], 'left_idle': [], 'right_idle': [],
+                           'up_hoe': [], 'down_hoe': [], 'left_hoe': [], 'right_hoe': [],
+                           'up_axe': [], 'down_axe': [], 'left_axe': [], 'right_axe': [],
+                           'up_water': [], 'down_water': [], 'left_water': [], 'right_water': []}
+        for animation in self.animations.keys():
+            full_path = '../graphics/character/' + animation
+            self.animations[animation] = import_folder(full_path)
+        print(self.animations)
 
     def input(self):
         keys = pygame.key.get_pressed()  # 键盘按下的键
